@@ -8,6 +8,13 @@ config({
 const app = express();
 
 
+// Using Middlewares
+app.use(express.json());
+app.use(express.urlencoded({
+  extended:true,
+}));
+
+
 // Importing and Using Routes
 import anime from "./routes/AnimeRoutes.js";
 import user from "./routes/userRoutes.js";

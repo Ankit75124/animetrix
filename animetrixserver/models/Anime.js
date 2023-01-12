@@ -53,11 +53,11 @@ const schema = new mongoose.Schema({
     default: 0,
   },
   category: {
-    type: Number,
+    type: String,
     required: [true, "Please select anime category"],
   },
   createdBy: {
-    type: Number,
+    type: String,
     required: [true, "Enter Anime Creator Name"],
   },
   createdAt: {
