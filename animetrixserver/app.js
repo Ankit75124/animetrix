@@ -7,4 +7,12 @@ config({
 });
 const app = express();
 
+
+// Importing and Using Routes
+import anime from "./routes/AnimeRoutes.js";
+import user from "./routes/userRoutes.js";
+
+app.use("/api/v1", anime);
+app.use("/api/v1", user);
+
 export default app;
