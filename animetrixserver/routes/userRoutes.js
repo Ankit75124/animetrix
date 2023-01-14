@@ -7,6 +7,8 @@ import {
   changePassword,
   updateProfile,
   updateProfilePicture,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/userController.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 
@@ -32,6 +34,12 @@ router.route("/updateprofile").put(isAuthenticated, updateProfile);
 
 // Update Profile Picture
 router.route("/updateprofilepicture").put(isAuthenticated, updateProfilePicture);
+
+// forget password
+router.route("/forgetpassword").post(forgotPassword);
+
+// reset password
+router.route("/resetpassword/:token").put(resetPassword);
 
 
 

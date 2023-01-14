@@ -2,6 +2,8 @@ import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { User } from "../models/User.js";
 import { sendToken } from "../utils/sendToken.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -86,17 +88,17 @@ export const changePassword = catchAsyncError(async (req, res, next) => {
 
   const isMatch = await user.comparePassword(oldPassword);
 
-    if (!isMatch) {
-      return next(new ErrorHandler("Incorrect old Password", 400));
-    }
+  if (!isMatch) {
+    return next(new ErrorHandler("Incorrect old Password", 400));
+  }
 
-    user.password = newPassword;
+  user.password = newPassword;
 
-    await user.save();
+  await user.save();
 
   res.status(200).json({
     success: true,
-    message:"password changed sucessfully",
+    message: "password changed sucessfully",
   });
 });
 
@@ -105,8 +107,8 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
 
   const user = await User.findById(req.user._id);
 
-  if(name) user.name=name;
-  if(email) user.email=email;
+  if (name) user.name = name;
+  if (email) user.email = email;
 
   await user.save();
 
@@ -116,10 +118,68 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
   });
 });
 
-
 export const updateProfilePicture = catchAsyncError(async (req, res, next) => {
-    res.status(200).json({
-      success: true,
-      message: "Profile Picture Updated sucessfully",
-    });
+  res.status(200).json({
+    success: true,
+    message: "Profile Picture Updated sucessfully",
+  });
+});
+
+export const forgotPassword = catchAsyncError(async (req, res, next) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
+  const resetToken = await user.getResetToken();
+
+  await user.save();
+
+  const url = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+
+  const message = `click on the link below to reset your password: \n\n${url}\n\nIf you have not requested this email, then ignore it.`;
+
+  await sendEmail(user.email, "Animetrix Password Reset", message);
+  res.status(200).json({
+    success: true,
+    message: `Reset link has been sent to your email ${user.email}`,
+  });
+});
+
+export const resetPassword = catchAsyncError(async (req, res, next) => {
+  const { token } = req.params;
+
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+
+  });
+
+      if (!user) {
+        return next(
+          new ErrorHandler(
+            "Password reset token is invalid or has expired",
+            401
+          )
+        );
+      }
+
+      user.password = req.body.password;
+      user.resetPasswordExpire = undefined;
+      user.resetPasswordToken = undefined;
+
+      await user.save();
+  res.status(200).json({
+    success: true,
+    message: "Password Updated sucessfully",
+    token,
+  });
 });
