@@ -1,14 +1,19 @@
 import express from 'express';
-import { addepisode, createAnime, getAllAnimes, getAnimeEpisodes } from '../controllers/animeController.js';
+import { addepisode, createAnime, deleteAnime, deleteEpisode, getAllAnimes, getAnimeEpisodes } from '../controllers/animeController.js';
+import { authorizeAdmin, isAuthenticated } from '../middlewares/auth.js';
 import singleUpload from '../middlewares/multer.js';
 
 const router = express.Router();
 
 
 router.route("/animes").get(getAllAnimes);
-router.route("/createanime").post(singleUpload,createAnime);
+router.route("/createanime").post(isAuthenticated ,authorizeAdmin,singleUpload, createAnime);
 
 
-router.route("/anime/:id").get(getAnimeEpisodes).post(singleUpload,addepisode);
+router
+  .route("/anime/:id")
+  .get(isAuthenticated, getAnimeEpisodes)
+  .post(isAuthenticated, authorizeAdmin,singleUpload, addepisode).delete(isAuthenticated, authorizeAdmin, deleteAnime);
 
+  router.route("/episode").delete(isAuthenticated, authorizeAdmin, deleteEpisode);
 export default router;
