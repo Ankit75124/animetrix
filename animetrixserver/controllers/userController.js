@@ -210,7 +210,7 @@ export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
 
   const user = await User.findById(req.user._id);
 
-  const anime = await Anime.findById(req.query._id);
+  const anime = await Anime.findById(req.query.id);
 
   if (!anime) return next(new ErrorHandler("Invalid Anime Id", 404));
 
