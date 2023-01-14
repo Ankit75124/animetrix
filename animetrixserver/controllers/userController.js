@@ -4,6 +4,7 @@ import { User } from "../models/User.js";
 import { sendToken } from "../utils/sendToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
+import { Anime } from "../models/Anime.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -160,26 +161,70 @@ export const resetPassword = catchAsyncError(async (req, res, next) => {
   const user = await User.findOne({
     resetPasswordToken,
     resetPasswordExpire: { $gt: Date.now() },
-
   });
 
-      if (!user) {
-        return next(
-          new ErrorHandler(
-            "Password reset token is invalid or has expired",
-            401
-          )
-        );
-      }
+  if (!user) {
+    return next(
+      new ErrorHandler("Password reset token is invalid or has expired", 401)
+    );
+  }
 
-      user.password = req.body.password;
-      user.resetPasswordExpire = undefined;
-      user.resetPasswordToken = undefined;
+  user.password = req.body.password;
+  user.resetPasswordExpire = undefined;
+  user.resetPasswordToken = undefined;
 
-      await user.save();
+  await user.save();
   res.status(200).json({
     success: true,
     message: "Password Updated sucessfully",
-    token,
   });
+});
+
+export const addToPlaylist = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+
+  const anime = await Anime.findById(req.body._id);
+
+  if (!anime) return next(new ErrorHandler("Invalid Anime Id", 404));
+
+  const itemExist = user.playlist.find((item) => {
+    if (item.anime.toString() === anime._id.toString()) return true;
+  });
+
+  if (itemExist) return next(new ErrorHandler("Anime Already Exist", 409));
+
+  user.playlist.push({
+    anime: anime._id,
+    poster: anime.poster.url,
+  });
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Added to playlist sucessfully",
+  });
+});
+
+export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
+
+  const user = await User.findById(req.user._id);
+
+  const anime = await Anime.findById(req.query._id);
+
+  if (!anime) return next(new ErrorHandler("Invalid Anime Id", 404));
+
+  const newPlaylist = user.playlist.filter(item=>{
+    if(item.anime.toString()!=anime._id.toString()) return item;
+  })
+
+  user.playlist=newPlaylist;
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Removed from playlist sucessfully",
+  });
+
 });
