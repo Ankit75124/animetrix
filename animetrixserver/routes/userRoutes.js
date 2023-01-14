@@ -4,6 +4,9 @@ import {
   login,
   logout,
   getMyProfile,
+  changePassword,
+  updateProfile,
+  updateProfilePicture,
 } from "../controllers/userController.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 
@@ -20,6 +23,15 @@ router.route("/logout").get(logout);
 
 // My Profile
 router.route("/me").get(isAuthenticated, getMyProfile);
+
+// Change Password
+router.route("/changepassword").put(isAuthenticated, changePassword);
+
+// Update Profile
+router.route("/updateprofile").put(isAuthenticated, updateProfile);
+
+// Update Profile Picture
+router.route("/updateprofilepicture").put(isAuthenticated, updateProfilePicture);
 
 
 
