@@ -22,11 +22,12 @@ app.use(cookieParser());
 import anime from "./routes/AnimeRoutes.js";
 import user from "./routes/userRoutes.js";
 import payment from "./routes/paymentRoutes.js";
-
+import other from "./routes/otherRoutes.js";
 
 app.use("/api/v1", anime);
 app.use("/api/v1", user);
 app.use("/api/v1", payment);
+app.use("/api/v1", other);
 
 export default app;
 
