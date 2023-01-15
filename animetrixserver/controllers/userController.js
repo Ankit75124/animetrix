@@ -5,12 +5,13 @@ import { sendToken } from "../utils/sendToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
 import { Anime } from "../models/Anime.js";
+import cloudinary from "cloudinary";
+import getDataUri from "../utils/dataUri.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
-  // const file =req.file;
-
-  if (!name || !email || !password) {
+  const file = req.file;  
+  if (!name || !email || !password || !file) {
     return next(new ErrorHandler("Please enter all details", 400));
   }
 
@@ -19,16 +20,19 @@ export const register = catchAsyncError(async (req, res, next) => {
   if (user) {
     return next(new ErrorHandler("User already exists", 409));
   }
-
   // Upload image to cloudinary;
+  
+  const fileUri = getDataUri(file);
+
+  const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
 
   user = await User.create({
     name,
     email,
     password,
     avatar: {
-      public_id: "tempid",
-      url: "tempurl",
+      public_id: mycloud.public_id,
+      url: mycloud.secure_url,
     },
   });
   sendToken(res, user, "Registered successfully", 201);
@@ -36,7 +40,7 @@ export const register = catchAsyncError(async (req, res, next) => {
 
 export const login = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
-  // const file =req.file;
+
 
   if (!email || !password) {
     return next(new ErrorHandler("Please enter all details", 400));
@@ -48,7 +52,6 @@ export const login = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User doesn't exist", 401));
   }
 
-  // Upload image to cloudinary;
 
   const isMatch = await user.comparePassword(password);
 
@@ -105,7 +108,7 @@ export const changePassword = catchAsyncError(async (req, res, next) => {
 
 export const updateProfile = catchAsyncError(async (req, res, next) => {
   const { name, email } = req.body;
-
+  const file = req.file;
   const user = await User.findById(req.user._id);
 
   if (name) user.name = name;
@@ -120,6 +123,23 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
 });
 
 export const updateProfilePicture = catchAsyncError(async (req, res, next) => {
+
+  const user = await User.findById(req.user._id);
+
+  const file = req.file;
+  
+  const fileUri = getDataUri(file);
+
+  const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
+
+   await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+
+   user.avatar = {
+    public_id: mycloud.public_id,
+    url: mycloud.secure_url,
+   };
+
+   await user.save();
   res.status(200).json({
     success: true,
     message: "Profile Picture Updated sucessfully",
@@ -207,18 +227,17 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
 });
 
 export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
-
   const user = await User.findById(req.user._id);
 
   const anime = await Anime.findById(req.query.id);
 
   if (!anime) return next(new ErrorHandler("Invalid Anime Id", 404));
 
-  const newPlaylist = user.playlist.filter(item=>{
-    if(item.anime.toString()!=anime._id.toString()) return item;
-  })
+  const newPlaylist = user.playlist.filter((item) => {
+    if (item.anime.toString() != anime._id.toString()) return item;
+  });
 
-  user.playlist=newPlaylist;
+  user.playlist = newPlaylist;
 
   await user.save();
 
@@ -226,5 +245,4 @@ export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "Removed from playlist sucessfully",
   });
-
 });
