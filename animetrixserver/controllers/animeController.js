@@ -3,6 +3,7 @@ import { Anime } from "../models/Anime.js";
 import getDataUri from "../utils/dataUri.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import cloudinary from "cloudinary";
+import { Stats } from "../models/Stats.js";
 
 export const getAllAnimes = catchAsyncError(async (req, res, next) => {
   const animes = await Anime.find().select("-episodes");
@@ -150,4 +151,21 @@ export const deleteEpisode = catchAsyncError(async (req, res, next) => {
     sucess: true,
     message: "Episode Deleted Successfully",
   });
+});
+
+Anime.watch().on("change", async() => {
+   const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+   const animes = await Anime.find({});
+
+   totalViews=0;
+
+   for (let i = 0; i < animes.length; i++) {
+    totalViews += animes[i].views;
+    
+   }
+
+   stats[0].views = totalViews;
+   stats[0].createdAt = new Date(Date.now());
+   
+   await stats[0].save();
 });
