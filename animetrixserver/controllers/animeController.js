@@ -6,7 +6,14 @@ import cloudinary from "cloudinary";
 import { Stats } from "../models/Stats.js";
 
 export const getAllAnimes = catchAsyncError(async (req, res, next) => {
-  const animes = await Anime.find().select("-episodes");
+
+  const keyword = req.query.keyword || "";
+  const category = req.query.category || "";
+
+  const animes = await Anime.find({
+    title: { $regex: keyword, $options: "i" },
+    category: { $regex: category, $options: "i" },
+  }).select("-episodes");
   res.status(200).json({
     sucess: true,
     animes,
@@ -157,7 +164,7 @@ Anime.watch().on("change", async() => {
    const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
    const animes = await Anime.find({});
 
-   totalViews=0;
+  let totalViews=0;
 
    for (let i = 0; i < animes.length; i++) {
     totalViews += animes[i].views;
@@ -166,6 +173,6 @@ Anime.watch().on("change", async() => {
 
    stats[0].views = totalViews;
    stats[0].createdAt = new Date(Date.now());
-   
+
    await stats[0].save();
 });
