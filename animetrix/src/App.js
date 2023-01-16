@@ -23,6 +23,10 @@ import Dashboard from './components/Admin/Dashboard/Dashboard';
 import CreateAnime from './components/Admin/CreateAnime/CreateAnime';
 import AdminAnimes from './components/Admin/AdminAnime/AdminAnimes';
 import Users from './components/Admin/Users/Users';
+import { useDispatch, useSelector } from 'react-redux';
+import toast,{Toaster} from 'react-hot-toast';
+import { useEffect } from 'react';
+import { loadUser } from './redux/actions/user';
 
 function App() {
 
@@ -30,9 +34,45 @@ function App() {
     e.preventDefault();
   });
 
+  const { isAuthenticated, user, message, error } = useSelector(
+    state => state.user
+  );
+
+    //  const dispatch = useDispatch();
+
+    //  useEffect(() => {
+    //   if(error){
+    //     toast.error(error)
+    //     dispatch({type:'clearError'})
+    //   }
+
+    //   if (message) {
+    //     toast.message(message);
+    //     dispatch({ type: 'clearMeassage' });
+    //   }
+    //  },[dispatch,error,message]);
+
+       const dispatch = useDispatch();
+       useEffect(() => {
+         if (error) {
+           toast.error(error);
+           dispatch({ type: 'clearError' });
+         }
+
+         if (message) {
+           toast.success(message);
+           dispatch({ type: 'clearMessage' });
+         }
+       }, [dispatch, error, message]);
+
+        useEffect(() => {
+          dispatch(loadUser());
+        }, [dispatch]); 
+
   return (
     <Router>
-      <Header />
+      <Header isAuthenticated={isAuthenticated}
+      user={user} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/animes" element={<Animes />} />
@@ -54,10 +94,6 @@ function App() {
         <Route path="/paymentsuccess" element={<PaymentSuccess />} />
         <Route path="*" element={<NotFound />} />
 
-
-
-
-
         {/* Admin Routes */}
 
         <Route path="/admin/dashboard" element={<Dashboard />} />
@@ -67,6 +103,7 @@ function App() {
       </Routes>
 
       <Footer />
+      <Toaster />
     </Router>
   );
 }
