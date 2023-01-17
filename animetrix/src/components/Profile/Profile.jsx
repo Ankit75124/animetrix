@@ -4,23 +4,8 @@ import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { fileUploadCss } from '../Auth/Register';
 
-const Profile = () => {
+const Profile = ({user}) => {
 
-    const user = {
-        name: "Katomekichi",
-        email: "antivirus076@gmail.com",
-        createdAt:String(new Date().toISOString()),
-        role: "reg",
-        subscription:{
-            status:"active"
-        },
-        playlist:[
-            {
-                anime:"asddd",
-                poster:"https://cdn.myanimelist.net/images/anime/5/87048.jpg",
-            }
-        ]
-    }
 
     const removeFromPlaylistHandler = id =>{
         console.log(id);
@@ -45,7 +30,7 @@ const Profile = () => {
         padding={'8'}
       >
         <VStack>
-          <Avatar boxSize={'48'} />
+          <Avatar boxSize={'48'} src={user.avatar.url}/>
 
           <Button colorScheme={'green'} variant="ghost"
           onClick={onOpen}>
@@ -69,9 +54,9 @@ const Profile = () => {
             <Text children={user.createdAt.split('T')[0]} />
           </HStack>
 
-          {user.role === 'admin' && (
+          {user.role !== 'admin' && (
             <HStack>
-              {user.subscription.status === 'active' ? (
+              {user.subscription && user.subscription.status === 'active' ? (
                 <Button color="green">Cancel Subscription</Button>
               ) : (
                 <Link to="/subscribe">
