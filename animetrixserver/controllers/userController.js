@@ -204,7 +204,7 @@ export const resetPassword = catchAsyncError(async (req, res, next) => {
 export const addToPlaylist = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
 
-  const anime = await Anime.findById(req.body._id);
+  const anime = await Anime.findById(req.body.id);
 
   if (!anime) return next(new ErrorHandler("Invalid Anime Id", 404));
 

@@ -1,17 +1,37 @@
 import { createReducer } from '@reduxjs/toolkit';
 
 
-export const animeReducer = createReducer({animes:[]}, {
-
-    allAnimeRequest: (state) => {
-        state.loading = true;
+export const animeReducer = createReducer(
+  { animes: [] },
+  {
+    allAnimeRequest: state => {
+      state.loading = true;
     },
     allAnimeSuccess: (state, action) => {
-        state.loading = false;
-        state.animes = action.payload;
+      state.loading = false;
+      state.animes = action.payload;
     },
     allAnimeFail: (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+      state.loading = false;
+      state.error = action.payload;
     },
-});
+    addToPlaylistRequest: state => {
+      state.loading = true;
+    },
+    addToPlaylistSuccess: (state, action) => {
+      state.loading = false;
+      state.animes = action.payload;
+    },
+    addToPlaylistFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    clearError: state => {
+      state.error = null;
+    },
+    clearMessage: state => {
+      state.message = null;
+    },
+  }
+);

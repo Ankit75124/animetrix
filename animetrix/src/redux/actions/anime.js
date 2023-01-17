@@ -19,3 +19,5 @@ export const getAllAnimes = (category="", keyword="") => async dispatch => {
     });
   }
 };
+
+

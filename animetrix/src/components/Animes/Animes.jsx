@@ -15,8 +15,9 @@ import { toast } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getAllAnimes } from '../../redux/actions/anime';
+import { addToPlaylist } from '../../redux/actions/profile';
 
-const Anime=({views, title, imageSrc, id, addToPlaylistHandler, creator, description,episodeCount}) =>{
+const Anime=({views, title, imageSrc, id, addToPlaylistHandler, creator, description,episodeCount,loading}) =>{
     return (
       <VStack className="anime" alignItems={['center', 'flex-start']}>
         <Image src={imageSrc} boxSize="60" objectFit={'contain'} />
@@ -61,7 +62,7 @@ const Anime=({views, title, imageSrc, id, addToPlaylistHandler, creator, descrip
               Watch Now
             </Button>
           </Link>
-          <Button variant={"ghost"} colorScheme={"green"} onClick={() =>addToPlaylistHandler(id)}>
+          <Button variant={"ghost"} colorScheme={"green"} onClick={() =>addToPlaylistHandler(id)} isLoading={loading}>
             Add to Playlist
           </Button>
         </Stack>
@@ -74,8 +75,12 @@ const Animes = () => {
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState('');
 
+   const dispatch = useDispatch();
+
   const addToPlaylistHandler =(animeId) =>{
     console.log("Added to playlist",animeId);
+
+    dispatch(addToPlaylist(animeId));
 
   }
 
@@ -88,9 +93,9 @@ const Animes = () => {
     'Shoenun',
   ];
 
-  const { loading,animes,error } = useSelector(state => state.anime);
+  const { loading,animes,error,message } = useSelector(state => state.anime);
 
-  const dispatch = useDispatch();
+ 
   useEffect(() => {
     dispatch(getAllAnimes(category, keyword));
 
@@ -98,7 +103,11 @@ const Animes = () => {
         toast.error(error);
         dispatch({ type: 'clearError' });
         }
-  }, [category, keyword,dispatch,error]);
+        if(message){
+          toast.success(message);
+          dispatch({type:"clearMessage"})
+        }
+  }, [category, keyword,dispatch,error,message]);
 
   return (
     <Container minH={'95vh'} maxW="container.lg" paddingY={'8'}>
@@ -144,6 +153,7 @@ const Animes = () => {
               creator={item.createdBy}
               episodeCount={item.noOfVideos}
               addToPlaylistHandler={addToPlaylistHandler}
+              loading={loading}
             />
           )):<Heading mt="4" children="No Animes Found" />}
       </Stack>
