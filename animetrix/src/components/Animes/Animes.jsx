@@ -10,7 +10,11 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { toast } from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { getAllAnimes } from '../../redux/actions/anime';
 
 const Anime=({views, title, imageSrc, id, addToPlaylistHandler, creator, description,episodeCount}) =>{
     return (
@@ -70,8 +74,9 @@ const Animes = () => {
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState('');
 
-  const addToPlaylistHandler =() =>{
-    console.log("Added to playlist");
+  const addToPlaylistHandler =(animeId) =>{
+    console.log("Added to playlist",animeId);
+
   }
 
   const categories = [
@@ -82,6 +87,18 @@ const Animes = () => {
     'Horror',
     'Shoenun',
   ];
+
+  const { loading,animes,error } = useSelector(state => state.anime);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getAllAnimes(category, keyword));
+
+        if (error) {
+        toast.error(error);
+        dispatch({ type: 'clearError' });
+        }
+  }, [category, keyword,dispatch,error]);
 
   return (
     <Container minH={'95vh'} maxW="container.lg" paddingY={'8'}>
@@ -115,19 +132,20 @@ const Animes = () => {
         justifyContent={['flex-start', 'space-evenly']}
         alignItems={['center', 'flex-start']}
       >
-        <Anime
-          title={'Naruto'}
-          description={
-            'Naruto is a Japanese manga series written and illustrated by Masashi Kishimoto. It tells the story of Naruto Uzumaki, an adolescent ninja who searches for recognition from his peers and the village and also dreams of becoming the Hokage, the leader of his village.'
-          }
-          views={23}
-          imageSrc={
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdZxCio-JALtZIzC161Lk8_RokeudTsvjCTQ&usqp=CAU'
-          }
-          creator={'Masashi Kishimoto'}
-          episodeCount={500}
-          addToPlaylistHandler={addToPlaylistHandler}
-        />
+        {animes.length>0?
+          animes.map((item) => (
+            <Anime
+              key={item._id}
+              title={item.title}
+              description={item.description}
+              views={item.views}
+              imageSrc={item.poster.url}
+              id={item._id}
+              creator={item.createdBy}
+              episodeCount={item.noOfVideos}
+              addToPlaylistHandler={addToPlaylistHandler}
+            />
+          )):<Heading mt="4" children="No Animes Found" />}
       </Stack>
     </Container>
   );
