@@ -16,73 +16,87 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getAllAnimes } from '../../redux/actions/anime';
 import { addToPlaylist } from '../../redux/actions/profile';
+import { loadUser } from '../../redux/actions/user';
 
-const Anime=({views, title, imageSrc, id, addToPlaylistHandler, creator, description,episodeCount,loading}) =>{
-    return (
-      <VStack className="anime" alignItems={['center', 'flex-start']}>
-        <Image src={imageSrc} boxSize="60" objectFit={'contain'} />
-        <Heading
-          textAlign={['center', 'left']}
-          maxW="200px"
-          fontFamily={'sans-serif'}
-          size={'sm'}
-          noOfLines={3}
-          children={title}
-        />
-        <Text noOfLines={2} children={description} />
 
-        <HStack>
-          <Text
-            fontWeight={'bold'}
-            textTransform="uppercase"
-            children="Creator :-"
-          />
-          <Text
-            fontFamily={'body'}
-            textTransform="uppercase"
-            children={creator}
-          />
-        </HStack>
+const Anime = ({
+  views,
+  title,
+  imageSrc,
+  id,
+  addToPlaylistHandler,
+  creator,
+  description,
+  episodeCount,
+  loading,
+}) => {
+  return (
+    <VStack className="anime" alignItems={['center', 'flex-start']}>
+      <Image src={imageSrc} boxSize="60" objectFit={'contain'} />
+      <Heading
+        textAlign={['center', 'left']}
+        maxW="200px"
+        fontFamily={'sans-serif'}
+        size={'sm'}
+        noOfLines={3}
+        children={title}
+      />
+      <Text noOfLines={2} children={description} />
 
-        <Heading
-          textAlign={'center'}
-          size="xs"
-          children={`Episodes :- ${episodeCount}`}
+      <HStack>
+        <Text
+          fontWeight={'bold'}
           textTransform="uppercase"
+          children="Creator :-"
         />
-        <Heading
-          size="xs"
-          children={`Views :- ${views}`}
+        <Text
+          fontFamily={'body'}
           textTransform="uppercase"
+          children={creator}
         />
+      </HStack>
 
-        <Stack direction={['column', 'row']} alignItems="center">
-          <Link to={`/anime/${id}`}>
-            <Button colorScheme={"green"}>
-              Watch Now
-            </Button>
-          </Link>
-          <Button variant={"ghost"} colorScheme={"green"} onClick={() =>addToPlaylistHandler(id)} isLoading={loading}>
-            Add to Playlist
-          </Button>
-        </Stack>
-      </VStack>
-    );
-}
+      <Heading
+        textAlign={'center'}
+        size="xs"
+        children={`Episodes :- ${episodeCount}`}
+        textTransform="uppercase"
+      />
+      <Heading
+        size="xs"
+        children={`Views :- ${views}`}
+        textTransform="uppercase"
+      />
 
+      <Stack direction={['column', 'row']} alignItems="center">
+        <Link to={`/anime/${id}`}>
+          <Button colorScheme={'green'}>Watch Now</Button>
+        </Link>
+        <Button
+          variant={'ghost'}
+          colorScheme={'green'}
+          onClick={() => addToPlaylistHandler(id)}
+          isLoading={loading}
+        >
+          Add to Playlist
+        </Button>
+      </Stack>
+    </VStack>
+  );
+};
 
 const Animes = () => {
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState('');
 
-   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-  const addToPlaylistHandler =(animeId) =>{
-    console.log("Added to playlist",animeId);
+  const addToPlaylistHandler =async animeId => {
+    // console.log('Added to playlist', animeId);
 
-    dispatch(addToPlaylist(animeId));
-
-  }
+   await dispatch(addToPlaylist(animeId));
+   dispatch(loadUser());
+  };
 
   const categories = [
     'Action',
@@ -90,24 +104,23 @@ const Animes = () => {
     'Comedy',
     'Blood-Shed',
     'Horror',
-    'Shoenun',
+    'Shonen',
   ];
 
-  const { loading,animes,error,message } = useSelector(state => state.anime);
+  const { loading, animes, error, message } = useSelector(state => state.anime);
 
- 
   useEffect(() => {
     dispatch(getAllAnimes(category, keyword));
 
-        if (error) {
-        toast.error(error);
-        dispatch({ type: 'clearError' });
-        }
-        if(message){
-          toast.success(message);
-          dispatch({type:"clearMessage"})
-        }
-  }, [category, keyword,dispatch,error,message]);
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+  }, [category, keyword, dispatch, error, message]);
 
   return (
     <Container minH={'95vh'} maxW="container.lg" paddingY={'8'}>
@@ -141,8 +154,8 @@ const Animes = () => {
         justifyContent={['flex-start', 'space-evenly']}
         alignItems={['center', 'flex-start']}
       >
-        {animes.length>0?
-          animes.map((item) => (
+        {animes.length > 0 ? (
+          animes.map(item => (
             <Anime
               key={item._id}
               title={item.title}
@@ -155,7 +168,10 @@ const Animes = () => {
               addToPlaylistHandler={addToPlaylistHandler}
               loading={loading}
             />
-          )):<Heading mt="4" children="No Animes Found" />}
+          ))
+        ) : (
+          <Heading mt="4" children="No Animes Found" />
+        )}
       </Stack>
     </Container>
   );
