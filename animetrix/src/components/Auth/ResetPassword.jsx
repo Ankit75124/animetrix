@@ -1,6 +1,9 @@
 import { Button, Container, Heading, Input, VStack } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { resetPassword } from '../../redux/actions/profile';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
@@ -8,31 +11,55 @@ const ResetPassword = () => {
   const params = useParams();
 //   console.log(params.token);
 
+const navigate = useNavigate();
+
+const { loading, message, error } = useSelector(state => state.profile);
+
+const dispatch = useDispatch();
+const submitHandler = e => {
+  e.preventDefault();
+  dispatch(resetPassword(params.token, password));
+};
+
+useEffect(() => {
+  if (error) {
+    toast.error(error);
+    dispatch({ type: 'clearError' });
+  }
+  if (message) {
+    toast.success(message);
+    dispatch({ type: 'clearMessage' });
+    navigate('/login');
+  }
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [dispatch, error, message]);
+
   return (
     <Container paddingy={'16'} height={'90vh'}>
-      <form>
+      <form onSubmit={submitHandler}>
         <Heading
           children="Reset Password ?"
           my="16"
           textTransform={'uppercase'}
           textAlign={['center', 'left']}
         />
-      </form>
 
-      <VStack spacing={'8'}>
-        <Input
-          required
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          placeholder="Enter new Password"
-          type={'password'}
-          focusBorderColor={'green.400'}
-        />
+        <VStack spacing={'8'}>
+          <Input
+            required
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Enter new Password"
+            type={'password'}
+            focusBorderColor={'green.400'}
+          />
 
-        <Button type="submit" width={'full'} colorScheme={'green'}>
+          <Button type="submit" width={'full'} colorScheme={'green'}
+          isLoading={loading}>
             Reset Password
-        </Button>
-      </VStack>
+          </Button>
+        </VStack>
+      </form>
     </Container>
   );
 };

@@ -43,7 +43,7 @@ const ChangePassword = () => {
         <VStack spacing={'8'}>
           <Input
             required
-            id="password"
+
             value={oldPassword}
             onChange={e => setOldPassword(e.target.value)}
             placeholder="Old password"
@@ -53,7 +53,6 @@ const ChangePassword = () => {
 
           <Input
             required
-            id="password"
             value={newPassword}
             onChange={e => setNewPassword(e.target.value)}
             placeholder="New password"
