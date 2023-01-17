@@ -1,7 +1,11 @@
 import { Avatar, Button, Container, Heading, HStack, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalOverlay, Stack, Text, useDisclosure, VStack } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { updateProfilePicture } from '../../redux/actions/profile';
+import { loadUser } from '../../redux/actions/user';
 import { fileUploadCss } from '../Auth/Register';
 
 const Profile = ({user}) => {
@@ -11,10 +15,29 @@ const Profile = ({user}) => {
         console.log(id);
     }
 
-    const changeImageSubmitHandler = (e, image) => {
+    const dispatch = useDispatch();
+
+    const {loading, message,error} = useSelector(state => state.user);
+
+    const changeImageSubmitHandler =async (e, image) => {
         e.preventDefault();
-        console.log(image);
+        const myForm = new FormData();
+
+        myForm.append('file', image);
+      await dispatch(updateProfilePicture(myForm));
+      dispatch(loadUser());
     };
+
+    useEffect(() => {
+      if (error) {
+        toast.error(error);
+        dispatch({ type: 'clearError' });
+      }
+      if (message) {
+        toast.success(message);
+        dispatch({ type: 'clearMessage' });
+      }
+    }, [dispatch, error, message]);
 
     const {isOpen,onOpen,onClose} =useDisclosure();
 
@@ -117,6 +140,7 @@ const Profile = ({user}) => {
         onClose={onClose}
         onOpen={onOpen}
         changeImageSubmitHandler={changeImageSubmitHandler}
+        loading={loading}
        />
 
 
@@ -126,7 +150,7 @@ const Profile = ({user}) => {
 
 export default Profile;
 
-function ChangePhotoBox({isOpen, onClose,changeImageSubmitHandler})
+function ChangePhotoBox({isOpen, onClose,changeImageSubmitHandler, loading})
 {   
     const [imagePrev, setImagePrev] = useState('');
     const [image, setImage] = useState('');
@@ -166,7 +190,12 @@ return (
                 onChange={changeImageHandler}
               />
 
-              <Button w="full" colorScheme="green" type="submit">
+              <Button
+                isLoading={loading}
+                w="full"
+                colorScheme="green"
+                type="submit"
+              >
                 Change Avatar
               </Button>
             </VStack>
