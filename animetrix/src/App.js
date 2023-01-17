@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Animes from './components/Animes/Animes';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
@@ -24,13 +24,13 @@ import CreateAnime from './components/Admin/CreateAnime/CreateAnime';
 import AdminAnimes from './components/Admin/AdminAnime/AdminAnimes';
 import Users from './components/Admin/Users/Users';
 import { useDispatch, useSelector } from 'react-redux';
-import toast,{Toaster} from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import { loadUser } from './redux/actions/user';
+import { ProtectedRoute } from 'protected-route-react';
 
 function App() {
-
-  window.addEventListener('contextmenu',e =>{
+  window.addEventListener('contextmenu', e => {
     e.preventDefault();
   });
 
@@ -38,41 +38,40 @@ function App() {
     state => state.user
   );
 
-    //  const dispatch = useDispatch();
+  //  const dispatch = useDispatch();
 
-    //  useEffect(() => {
-    //   if(error){
-    //     toast.error(error)
-    //     dispatch({type:'clearError'})
-    //   }
+  //  useEffect(() => {
+  //   if(error){
+  //     toast.error(error)
+  //     dispatch({type:'clearError'})
+  //   }
 
-    //   if (message) {
-    //     toast.message(message);
-    //     dispatch({ type: 'clearMeassage' });
-    //   }
-    //  },[dispatch,error,message]);
+  //   if (message) {
+  //     toast.message(message);
+  //     dispatch({ type: 'clearMeassage' });
+  //   }
+  //  },[dispatch,error,message]);
 
-       const dispatch = useDispatch();
-       useEffect(() => {
-         if (error) {
-           toast.error(error);
-           dispatch({ type: 'clearError' });
-         }
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
 
-         if (message) {
-           toast.success(message);
-           dispatch({ type: 'clearMessage' });
-         }
-       }, [dispatch, error, message]);
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+  }, [dispatch, error, message]);
 
-        useEffect(() => {
-          dispatch(loadUser());
-        }, [dispatch]); 
+  useEffect(() => {
+    dispatch(loadUser());
+  }, [dispatch]);
 
   return (
     <Router>
-      <Header isAuthenticated={isAuthenticated}
-      user={user} />
+      <Header isAuthenticated={isAuthenticated} user={user} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/animes" element={<Animes />} />
@@ -80,11 +79,28 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/request" element={<Request />} />
 
-        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/updateprofile" element={<UpdateProfile />} />
         <Route path="/changepassword" element={<ChangePassword />} />
         <Route path="/about" element={<About />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={
+            <ProtectedRoute
+              isAuthenticated={!isAuthenticated}
+              redirect="/profile"
+            >
+              <Login />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/register" element={<Register />} />
         <Route path="/forgetpassword" element={<ForgetPassword />} />
         <Route path="/resetpassword/:token" element={<ResetPassword />} />
