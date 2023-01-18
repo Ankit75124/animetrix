@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getAllAnimes } from '../../redux/actions/anime';
 import { addToPlaylist } from '../../redux/actions/profile';
 import { loadUser } from '../../redux/actions/user';
@@ -27,7 +27,7 @@ const Anime = ({
   addToPlaylistHandler,
   creator,
   description,
-  episodeCount,
+  lectureCount,
   loading,
 }) => {
   return (
@@ -59,7 +59,7 @@ const Anime = ({
       <Heading
         textAlign={'center'}
         size="xs"
-        children={`Episodes :- ${episodeCount}`}
+        children={`Episodes :- ${lectureCount}`}
         textTransform="uppercase"
       />
       <Heading
@@ -91,11 +91,14 @@ const Animes = () => {
 
   const dispatch = useDispatch();
 
+  const navigate = useNavigate();
+
   const addToPlaylistHandler =async animeId => {
     // console.log('Added to playlist', animeId);
 
    await dispatch(addToPlaylist(animeId));
    dispatch(loadUser());
+    navigate('/profile');
   };
 
   const categories = [
@@ -155,22 +158,33 @@ const Animes = () => {
         alignItems={['center', 'flex-start']}
       >
         {animes.length > 0 ? (
-          animes.map(item => (
-            <Anime
-              key={item._id}
-              title={item.title}
-              description={item.description}
-              views={item.views}
-              imageSrc={item.poster.url}
-              id={item._id}
-              creator={item.createdBy}
-              episodeCount={item.noOfVideos}
-              addToPlaylistHandler={addToPlaylistHandler}
-              loading={loading}
-            />
-          ))
+          animes.map((item) => {
+            console.log(
+              item._id,
+              item.title,
+              item.description,
+              item.views,
+              item.poster.url,
+              item.createdBy,
+              item.noOfVideos,
+            );
+            return (
+              <Anime
+                key={item._id}
+                title={item.title}
+                description={item.description}
+                views={item.views}
+                imageSrc={item.poster.url}
+                id={item._id}
+                creator={item.createdBy}
+                lectureCount={item.noOfVideos}
+                addToPlaylistHandler={addToPlaylistHandler}
+                loading={loading}
+              />
+            );
+        })
         ) : (
-          <Heading mt="4" children="No Animes Found" />
+          <Heading mt="4" children="Courses Not Found" />
         )}
       </Stack>
     </Container>

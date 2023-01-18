@@ -1,15 +1,16 @@
 import {configureStore} from '@reduxjs/toolkit';
 import { animeReducer } from './reducers/animeReducer';
-import { userReducer, profileReducer } from './reducers/userReducer';
+import { userReducer, profileReducer, subscriptionReducer } from './reducers/userReducer';
 
 
 
 const store = configureStore({
-    reducer: {
-        user: userReducer,
-        profile: profileReducer,
-        anime: animeReducer,
-    },
+  reducer: {
+    user: userReducer,
+    profile: profileReducer,
+    anime: animeReducer,
+    subscription: subscriptionReducer,
+  },
 });
 
 export default store;
