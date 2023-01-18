@@ -80,7 +80,14 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/animes" element={<Animes />} />
-            <Route path="/anime/:id" element={<AnimePage />} />
+            <Route
+              path="/anime/:id"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <AnimePage user={user}/>
+                </ProtectedRoute>
+              }
+            />
             <Route path="/contact" element={<Contact />} />
             <Route path="/request" element={<Request />} />
 
@@ -88,7 +95,7 @@ function App() {
               path="/profile"
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <Profile user={user}/>
+                  <Profile user={user} />
                 </ProtectedRoute>
               }
             />
@@ -96,7 +103,7 @@ function App() {
               path="/updateprofile"
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <UpdateProfile user={user}/>
+                  <UpdateProfile user={user} />
                 </ProtectedRoute>
               }
             />
@@ -131,23 +138,35 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/forgetpassword" element={<ProtectedRoute
-            isAuthenticated={!isAuthenticated}
-              redirect="/profile">
-              <ForgetPassword />
-            </ProtectedRoute>} />
+            <Route
+              path="/forgetpassword"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={!isAuthenticated}
+                  redirect="/profile"
+                >
+                  <ForgetPassword />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/resetpassword/:token" element={<ProtectedRoute
-            isAuthenticated={!isAuthenticated}
-              redirect="/profile">
-              <ResetPassword  />
-            </ProtectedRoute>} />
+            <Route
+              path="/resetpassword/:token"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={!isAuthenticated}
+                  redirect="/profile"
+                >
+                  <ResetPassword />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/subscribe"
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <Subscribe user={user}/>
+                  <Subscribe user={user} />
                 </ProtectedRoute>
               }
             />

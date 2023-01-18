@@ -16,11 +16,11 @@ const schema = new mongoose.Schema({
     {
       title: {
         type: String,
-        required: [true, "Please enter episode title"],
+        required: true,
       },
       description: {
         type: String,
-        required: [true, "Please enter episode description"],
+        required: true,
       },
       video: {
         public_id: {
