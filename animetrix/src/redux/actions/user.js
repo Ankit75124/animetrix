@@ -24,6 +24,7 @@ export const login = (email, password) => async dispatch => {
 export const loadUser = () => async dispatch => {
   try {
     dispatch({ type: 'loadUserRequest' });
+
     const { data } = await axios.get(
       `${server}/me`,
 
@@ -36,6 +37,7 @@ export const loadUser = () => async dispatch => {
     dispatch({ type: 'loadUserFail', payload: error.response.data.message });
   }
 };
+
 
 export const logout = () => async dispatch => {
   try {

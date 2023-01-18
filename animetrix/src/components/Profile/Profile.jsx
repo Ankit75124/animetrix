@@ -5,7 +5,7 @@ import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { removeFromPlaylist, updateProfilePicture } from '../../redux/actions/profile';
-import { loadUser } from '../../redux/actions/user';
+import { cancelSubscription, loadUser } from '../../redux/actions/user';
 import { fileUploadCss } from '../Auth/Register';
 
 const Profile = ({user}) => {
@@ -15,6 +15,11 @@ const Profile = ({user}) => {
     const dispatch = useDispatch();
 
     const {loading, message,error} = useSelector(state => state.user);
+    const {
+      loading: subscriptionLoading,
+      message: subscriptionMessage,
+      error: subscriptionError,
+    } = useSelector(state => state.subscription);
 
     
     const removeFromPlaylistHandler =async id => {
@@ -31,16 +36,29 @@ const Profile = ({user}) => {
       dispatch(loadUser());
     };
 
+    const cancelSubscriptionHandler = async () => {
+      dispatch(cancelSubscription());
+      dispatch(loadUser());
+    };
+
     useEffect(() => {
       if (error) {
         toast.error(error);
+        dispatch({ type: 'clearError' });
+      }
+      if(subscriptionError){
+        toast.error(subscriptionError);
         dispatch({ type: 'clearError' });
       }
       if (message) {
         toast.success(message);
         dispatch({ type: 'clearMessage' });
       }
-    }, [dispatch, error, message]);
+      if (subscriptionMessage) {
+        toast.success(subscriptionMessage);
+        dispatch({ type: 'clearMessage' });
+      }
+    }, [dispatch, error, message,subscriptionError,subscriptionMessage]);
 
     const {isOpen,onOpen,onClose} =useDisclosure();
 
@@ -56,10 +74,9 @@ const Profile = ({user}) => {
         padding={'8'}
       >
         <VStack>
-          <Avatar boxSize={'48'} src={user.avatar.url}/>
+          <Avatar boxSize={'48'} src={user.avatar.url} />
 
-          <Button colorScheme={'green'} variant="ghost"
-          onClick={onOpen}>
+          <Button colorScheme={'green'} variant="ghost" onClick={onOpen}>
             Change Avatar
           </Button>
         </VStack>
@@ -83,7 +100,9 @@ const Profile = ({user}) => {
           {user.role !== 'admin' && (
             <HStack>
               {user.subscription && user.subscription.status === 'active' ? (
-                <Button color="green">Cancel Subscription</Button>
+                <Button isLoading={subscriptionLoading} onClick={cancelSubscriptionHandler} color="green">
+                  Cancel Subscription
+                </Button>
               ) : (
                 <Link to="/subscribe">
                   <Button colorScheme={'green'}>Subscribe</Button>
@@ -112,29 +131,36 @@ const Profile = ({user}) => {
       <Heading children="Playlist" size="md" my="8" />
 
       {user.playlist.length > 0 && (
-        <Stack direction={['column', 'row']} alignItems={'center'}
-        flexWrap="wrap"
-        p="4">
-            {
-                user.playlist.map((element)=>(
-                    <VStack w="48" m="2" key={element.anime}>
-                    <Image boxSize={"full"} objectFit="contain" src={element.poster}/>
+        <Stack
+          direction={['column', 'row']}
+          alignItems={'center'}
+          flexWrap="wrap"
+          p="4"
+        >
+          {user.playlist.map(element => (
+            <VStack w="48" m="2" key={element.anime}>
+              <Image
+                boxSize={'full'}
+                objectFit="contain"
+                src={element.poster}
+              />
 
-                    <HStack>
+              <HStack>
+                <Link to={`/anime/${element.anime}`}>
+                  <Button colorScheme={'green'} variant="ghost">
+                    Watch Now
+                  </Button>
+                </Link>
 
-                        <Link to={`/anime/${element.anime}`}>
-                        <Button colorScheme={'green'}
-                        variant="ghost">Watch Now</Button>
-                        </Link>
-
-                        <Button onClick={() => removeFromPlaylistHandler(element.anime)} isLoading={loading}>
-                            <RiDeleteBin7Fill />
-                        </Button>
-                    </HStack>
-
-                    </VStack>
-                ))
-            }
+                <Button
+                  onClick={() => removeFromPlaylistHandler(element.anime)}
+                  isLoading={loading}
+                >
+                  <RiDeleteBin7Fill />
+                </Button>
+              </HStack>
+            </VStack>
+          ))}
         </Stack>
       )}
 
@@ -144,9 +170,7 @@ const Profile = ({user}) => {
         onOpen={onOpen}
         changeImageSubmitHandler={changeImageSubmitHandler}
         loading={loading}
-       />
-
-
+      />
     </Container>
   );
 }
