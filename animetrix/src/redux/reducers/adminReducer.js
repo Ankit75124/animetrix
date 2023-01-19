@@ -6,13 +6,32 @@ export const adminReducer = createReducer(
     createAnimeRequest: state => {
       state.loading = true;
     },
-    createAnimeSuccess: (state,action) => {
+    createAnimeSuccess: (state, action) => {
       state.loading = false;
-        state.message = action.payload;
+      state.message = action.payload;
     },
-    createAnimeFail: (state,action) => {
+    createAnimeFail: (state, action) => {
       state.loading = false;
-        state.error = action.payload;
+      state.error = action.payload;
+    },
+
+    deleteAnimeRequest: state => {
+      state.loading = true;
+    },
+    deleteAnimeSuccess: (state, action) => {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    deleteAnimeFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    clearError: state => {
+      state.error = null;
+    },
+    clearMessage: state => {
+      state.message = null;
     },
   }
 );

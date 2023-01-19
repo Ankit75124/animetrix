@@ -20,3 +20,21 @@ export const createAnime = formData => async dispatch => {
     });
   }
 };
+
+
+export const deleteAnime = (id) => async dispatch => {
+  try {
+    dispatch({ type: 'deleteAnimeRequest' });
+
+    const { data } = await axios.delete(`${server}/anime/${id}`, {
+      withCredentials: true,
+    });
+
+    dispatch({ type: 'deleteAnimeSuccess', payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: 'deleteAnimeFail',
+      payload: error.response.data.message,
+    });
+  }
+};

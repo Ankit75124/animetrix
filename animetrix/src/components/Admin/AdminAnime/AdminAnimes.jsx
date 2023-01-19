@@ -5,32 +5,27 @@ import { useDispatch, useSelector } from 'react-redux';
 import cursor from '../../../assets/images/cursor.png';
 import Sidebar from '../Sidebar';
 import AnimeModal from './AnimeModal';
-import { getAllAnimes } from '../../../redux/actions/anime';
+import { getAllAnimes, getAnimeEpisodes } from '../../../redux/actions/anime';
+import { deleteAnime } from '../../../redux/actions/admin';
+import { toast } from 'react-hot-toast';
 
 const AdminAnimes = () => {
-  // const animes = [
-  //   {
-  //     _id: '123',
-  //     title: 'Naruto',
-  //     category: 'shonen',
-  //     poster: {
-  //       url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdZxCio-JALtZIzC161Lk8_RokeudTsvjCTQ&usqp=CAU',
-  //     },
-  //     createdBy: 'Nishimoto',
-  //     views:123,
-  //     numofVideos:12,
-  //   },
-  // ];
 
-  const {animes} = useSelector(state => state.anime);
+  const { animes, episodes} = useSelector(state => state.anime);
+  const { loading,error, message } = useSelector(state => state.admin);
+
+
+
   const dispatch = useDispatch();
 
-  const animeDetailsHandler = userId => {
+  const animeDetailsHandler = animeId => {
+    dispatch(getAnimeEpisodes(animeId));
     onOpen();
   };
 
-  const deleteButtonHandler = userId => {
-    console.log(userId);
+  const deleteButtonHandler = animeId => {
+    console.log(animeId);
+    dispatch(deleteAnime(animeId));
   };
 
   const deleteEpisodeButtonHandler = (animeId,episodeId) =>{
@@ -43,12 +38,24 @@ const AdminAnimes = () => {
 
   }
 
+    const { isOpen, onClose, onOpen } = useDisclosure();
+
   useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+
     dispatch(getAllAnimes());
-  }, [dispatch])
+  }, [dispatch, error, message,onClose]);
   
 
-  const {isOpen, onClose, onOpen} =useDisclosure();
+
   return (
     <Grid
       minH="100vh"
@@ -87,6 +94,7 @@ const AdminAnimes = () => {
                   deleteButtonHandler={deleteButtonHandler}
                   key={item._id}
                   item={item}
+                  loading={loading}
                 />
               ))}
             </Tbody>
@@ -94,11 +102,13 @@ const AdminAnimes = () => {
         </TableContainer>
         <AnimeModal
           isOpen={isOpen}
-          id={"45678823847839"}
+          id={'45678823847839'}
           animeTitle="Naruto"
           onClose={onClose}
           deleteButtonHandler={deleteEpisodeButtonHandler}
           addLectureHandler={addLectureHandler}
+          episodes={episodes}
+          loading={loading}
         />
       </Box>
 
@@ -110,12 +120,12 @@ const AdminAnimes = () => {
 
 
 
-function Row({ item, animeDetailsHandler, deleteButtonHandler }) {
+function Row({ item, animeDetailsHandler, deleteButtonHandler,loading }) {
   return (
     <Tr>
       <Td>#{item._id}</Td>
       <Td>
-        <Image src={item.poster.url} h="30px"/>
+        <Image src={item.poster.url} h="30px" />
       </Td>
       <Td>{item.title}</Td>
       <Td textTransform={'uppercase'}>{item.category}</Td>
@@ -129,12 +139,14 @@ function Row({ item, animeDetailsHandler, deleteButtonHandler }) {
             variant={'outline'}
             color="purple.500"
             onClick={() => animeDetailsHandler(item._id)}
+            isLoading={loading}
           >
             View Episodes
           </Button>
           <Button
             color="purple.600"
             onClick={() => deleteButtonHandler(item._id)}
+            isLoading={loading}
           >
             <RiDeleteBin7Fill />
           </Button>

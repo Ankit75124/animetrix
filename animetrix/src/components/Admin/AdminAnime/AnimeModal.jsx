@@ -26,7 +26,7 @@ const AnimeModal = ({
   deleteButtonHandler,
   addLectureHandler,
   animeTitle,
-  episodes = [1,2,3,4,5,6,7,8,9,10],
+  episodes=[],loading
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -53,8 +53,12 @@ const AnimeModal = ({
     onClose();
   }
   return (
-    <Modal isOpen={isOpen} size="full" onClose={handleClose}
-    scrollBehavior="outside">
+    <Modal
+      isOpen={isOpen}
+      size="full"
+      onClose={handleClose}
+      scrollBehavior="outside"
+    >
       <ModalOverlay>
         <ModalContent>
           <ModalHeader>{animeTitle}</ModalHeader>
@@ -69,20 +73,20 @@ const AnimeModal = ({
 
                 <Heading children={'Episodes'} size={'lg'} />
 
-                {
-                    episodes.map((item,i) =>{
-                    return    <VideoCard
-                          title="Pilot"
-                          key={i}
-                          description="1st episode of Naruto, story of naurjsdjsdjs dfd"
-                          num={1}
-                          episodeId="sdfsfdfsdsd ----- episodeId  "
-                          animeId={id}
-                          deleteButtonHandler={deleteButtonHandler}
-                        />;
-                    })
-                }
-                
+                {episodes.map((item, i) => {
+                  return (
+                    <VideoCard
+                      title={item.title}
+                      key={i}
+                      description={item.description}
+                      num={1 + i}
+                      episodeId={item._id}
+                      animeId={id}
+                      deleteButtonHandler={deleteButtonHandler}
+                      loading={loading}
+                    />
+                  );
+                })}
               </Box>
 
               <Box>
@@ -132,7 +136,12 @@ const AnimeModal = ({
                         src={videoPrev}
                       ></video>
                     )}
-                    <Button w="full" colorScheme={'purple'} type="submit">
+                    <Button
+                      w="full"
+                      colorScheme={'purple'}
+                      type="submit"
+                      isLoading={loading}
+                    >
                       Upload
                     </Button>
                   </VStack>
@@ -159,6 +168,7 @@ function VideoCard({
   episodeId,
   animeId,
   deleteButtonHandler,
+  loading
 }) {
   return (
     <Stack
@@ -176,6 +186,7 @@ function VideoCard({
       <Button
         color={'purple.600'}
         onClick={() => deleteButtonHandler(animeId, episodeId)}
+        isLoading={loading}
       >
         <RiDeleteBin7Fill />
       </Button>
