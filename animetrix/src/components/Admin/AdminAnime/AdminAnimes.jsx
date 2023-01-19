@@ -147,13 +147,15 @@ function Row({ item, animeDetailsHandler, deleteButtonHandler,loading }) {
       <Td>{item.createdBy}</Td>
 
       <Td isNumeric>{item.views}</Td>
-      <Td isNumeric>{item.numofVideos}</Td>
+      <Td isNumeric>{item.noOfVideos}</Td>
       <Td isNumeric>
         <HStack justifyContent={'flex-end'}>
           <Button
             variant={'outline'}
             color="purple.500"
-            onClick={() => animeDetailsHandler(item._id,item.title,item.description)}
+            onClick={() =>
+              animeDetailsHandler(item._id, item.title, item.description)
+            }
             isLoading={loading}
           >
             View Episodes

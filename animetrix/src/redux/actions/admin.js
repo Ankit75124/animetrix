@@ -78,3 +78,22 @@ export const deleteEpisode = (animeId, episodeId) => async dispatch => {
     });
   }
 };
+
+
+export const getAllUsers = () => async dispatch => {
+  try {
+    const config = {
+      withCredentials: true,
+    };
+    dispatch({ type: 'getAllUsersRequest' });
+
+    const { data } = await axios.get(`${server}/admin/users`, config);
+
+    dispatch({ type: 'getAllUsersSuccess', payload: data.user });
+  } catch (error) {
+    dispatch({
+      type: 'getAllUsersFail',
+      payload: error.response.data.message,
+    });
+  }
+};
