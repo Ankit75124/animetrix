@@ -9,7 +9,11 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { toast } from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
 import cursor from '../../../assets/images/cursor.png';
+import { createAnime } from '../../../redux/actions/admin';
 import { fileUploadCss } from '../../Auth/Register';
 import Sidebar from '../Sidebar';
 
@@ -42,6 +46,32 @@ const CreateAnime = () => {
     };
   };
 
+  const dispatch = useDispatch();
+  const { loading, error, message } = useSelector(state => state.admin);
+
+  const submitHandler = e => {
+    e.preventDefault();
+    const myForm = new FormData();
+    myForm.append('title', title);
+    myForm.append('description', description);
+    myForm.append('category', category);
+    myForm.append('createdBy', createdBy);
+    myForm.append('file', image);
+    dispatch(createAnime(myForm));
+  };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+  }, [dispatch, error, message]);
+
   return (
     <Grid
       minH="100vh"
@@ -51,7 +81,7 @@ const CreateAnime = () => {
       }}
     >
       <Container py="16">
-        <form>
+        <form onSubmit={submitHandler}>
           <Heading
             textTransform={'uppercase'}
             my="16"
@@ -100,19 +130,27 @@ const CreateAnime = () => {
               required
               type={'file'}
               focusBorderColor={'purple.300'}
-              css={{ '&::file-selector-button ': {
-                ...fileUploadCss,color: 'purple',
-              }, }}
+              css={{
+                '&::file-selector-button ': {
+                  ...fileUploadCss,
+                  color: 'purple',
+                },
+              }}
               onChange={changeImageHandler}
             />
 
-          {imagePrev && (
-            <Image src={imagePrev} boxSize="64" objectFit="containe" />
-          )}
+            {imagePrev && (
+              <Image src={imagePrev} boxSize="64" objectFit="containe" />
+            )}
 
-          <Button w="full" colorScheme={"purple" }type="submit">
-            Create Anime
-          </Button>
+            <Button
+              w="full"
+              colorScheme={'purple'}
+              type="submit"
+              isLoading={loading}
+            >
+              Create Anime
+            </Button>
           </VStack>
         </form>
       </Container>

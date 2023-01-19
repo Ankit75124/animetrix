@@ -1,24 +1,29 @@
 import { Box, Button, Grid, Heading, HStack, Image, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
+import { useDispatch, useSelector } from 'react-redux';
 import cursor from '../../../assets/images/cursor.png';
 import Sidebar from '../Sidebar';
 import AnimeModal from './AnimeModal';
+import { getAllAnimes } from '../../../redux/actions/anime';
 
 const AdminAnimes = () => {
-  const animes = [
-    {
-      _id: '123',
-      title: 'Naruto',
-      category: 'shonen',
-      poster: {
-        url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdZxCio-JALtZIzC161Lk8_RokeudTsvjCTQ&usqp=CAU',
-      },
-      createdBy: 'Nishimoto',
-      views:123,
-      numofVideos:12,
-    },
-  ];
+  // const animes = [
+  //   {
+  //     _id: '123',
+  //     title: 'Naruto',
+  //     category: 'shonen',
+  //     poster: {
+  //       url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdZxCio-JALtZIzC161Lk8_RokeudTsvjCTQ&usqp=CAU',
+  //     },
+  //     createdBy: 'Nishimoto',
+  //     views:123,
+  //     numofVideos:12,
+  //   },
+  // ];
+
+  const {animes} = useSelector(state => state.anime);
+  const dispatch = useDispatch();
 
   const animeDetailsHandler = userId => {
     onOpen();
@@ -37,6 +42,11 @@ const AdminAnimes = () => {
     e.preventDefault();
 
   }
+
+  useEffect(() => {
+    dispatch(getAllAnimes());
+  }, [dispatch])
+  
 
   const {isOpen, onClose, onOpen} =useDisclosure();
   return (
@@ -105,7 +115,7 @@ function Row({ item, animeDetailsHandler, deleteButtonHandler }) {
     <Tr>
       <Td>#{item._id}</Td>
       <Td>
-        <Image src={item.poster.url}/>
+        <Image src={item.poster.url} h="30px"/>
       </Td>
       <Td>{item.title}</Td>
       <Td textTransform={'uppercase'}>{item.category}</Td>

@@ -106,7 +106,7 @@ const AnimePage = ({user}) => {
          </VStack>
        </>
      ) : (
-       <Heading children="No Lectures" />
+       <Heading children="No Episodes" />
      )}
    </Grid>
  );
