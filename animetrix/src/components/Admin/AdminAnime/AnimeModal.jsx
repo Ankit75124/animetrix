@@ -26,7 +26,7 @@ const AnimeModal = ({
   deleteButtonHandler,
   addLectureHandler,
   animeTitle,
-  episodes=[],loading
+  episodes,loading
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');

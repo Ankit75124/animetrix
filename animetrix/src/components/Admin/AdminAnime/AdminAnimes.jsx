@@ -1,12 +1,12 @@
 import { Box, Button, Grid, Heading, HStack, Image, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import cursor from '../../../assets/images/cursor.png';
 import Sidebar from '../Sidebar';
 import AnimeModal from './AnimeModal';
 import { getAllAnimes, getAnimeEpisodes } from '../../../redux/actions/anime';
-import { deleteAnime } from '../../../redux/actions/admin';
+import { addEpisode, deleteAnime, deleteEpisode } from '../../../redux/actions/admin';
 import { toast } from 'react-hot-toast';
 
 const AdminAnimes = () => {
@@ -14,13 +14,20 @@ const AdminAnimes = () => {
   const { animes, episodes} = useSelector(state => state.anime);
   const { loading,error, message } = useSelector(state => state.admin);
 
+  const [animeId, setAnimeId] = useState('');
+  const [animeTitle, setAnimeTitle] = useState('');
+
+
 
 
   const dispatch = useDispatch();
 
-  const animeDetailsHandler = animeId => {
+  const animeDetailsHandler = (animeId,title,description) => {
     dispatch(getAnimeEpisodes(animeId));
     onOpen();
+    setAnimeId(animeId);
+    setAnimeTitle(title);
+
   };
 
   const deleteButtonHandler = animeId => {
@@ -28,14 +35,22 @@ const AdminAnimes = () => {
     dispatch(deleteAnime(animeId));
   };
 
-  const deleteEpisodeButtonHandler = (animeId,episodeId) =>{
+  const deleteEpisodeButtonHandler =async  (animeId,episodeId) =>{
     console.log(animeId)
     console.log(episodeId)
+  await dispatch(deleteEpisode(animeId,episodeId));
+  dispatch(getAnimeEpisodes(animeId));
   }
 
-  const addLectureHandler =(e,animeId,title,description,video) =>{
+  const addLectureHandler =async(e,animeId,title,description,video) =>{
     e.preventDefault();
 
+    const myForm = new FormData();
+    myForm.append('title', title);
+    myForm.append('description', description);
+    myForm.append('file', video);
+    await dispatch(addEpisode(animeId,myForm));
+    dispatch(getAnimeEpisodes(animeId));
   }
 
     const { isOpen, onClose, onOpen } = useDisclosure();
@@ -102,8 +117,8 @@ const AdminAnimes = () => {
         </TableContainer>
         <AnimeModal
           isOpen={isOpen}
-          id={'45678823847839'}
-          animeTitle="Naruto"
+          id={animeId}
+          animeTitle={animeTitle}
           onClose={onClose}
           deleteButtonHandler={deleteEpisodeButtonHandler}
           addLectureHandler={addLectureHandler}
@@ -138,7 +153,7 @@ function Row({ item, animeDetailsHandler, deleteButtonHandler,loading }) {
           <Button
             variant={'outline'}
             color="purple.500"
-            onClick={() => animeDetailsHandler(item._id)}
+            onClick={() => animeDetailsHandler(item._id,item.title,item.description)}
             isLoading={loading}
           >
             View Episodes

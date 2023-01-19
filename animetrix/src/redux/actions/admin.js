@@ -38,3 +38,43 @@ export const deleteAnime = (id) => async dispatch => {
     });
   }
 };
+
+export const addEpisode = (id,formData) => async dispatch => {
+  try {
+    dispatch({ type: 'addEpisodeRequest' });
+
+    const { data } = await axios.post(`${server}/anime/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      withCredentials: true,
+    });
+
+    dispatch({ type: 'addEpisodeSuccess', payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: 'addEpisodeFail',
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const deleteEpisode = (animeId, episodeId) => async dispatch => {
+  try {
+    dispatch({ type: 'deleteEpisodeRequest' });
+
+    const { data } = await axios.delete(`${server}/episode?animeId=${animeId}&episodeId=${episodeId}`,
+    
+    {
+
+      withCredentials: true,
+    });
+
+    dispatch({ type: 'deleteEpisodeSuccess', payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: 'deleteEpisodeFail',
+      payload: error.response.data.message,
+    });
+  }
+};
