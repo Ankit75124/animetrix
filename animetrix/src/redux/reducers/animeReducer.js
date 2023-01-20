@@ -32,7 +32,7 @@ export const animeReducer = createReducer(
     },
     addToPlaylistSuccess: (state, action) => {
       state.loading = false;
-      state.animes = action.payload;
+      state.message = action.payload;
     },
     addToPlaylistFail: (state, action) => {
       state.loading = false;

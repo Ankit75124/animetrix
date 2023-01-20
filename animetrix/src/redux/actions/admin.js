@@ -97,3 +97,39 @@ export const getAllUsers = () => async dispatch => {
     });
   }
 };
+
+export const updateUserRole = (id) => async dispatch => {
+  try {
+    const config = {
+      withCredentials: true,
+    };
+    dispatch({ type: 'updateUserRoleRequest' });
+
+    const { data } = await axios.put(`${server}/admin/user/${id}`,{}, config);
+
+    dispatch({ type: 'updateUserRoleSuccess', payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: 'updateUserRoleFail',
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const deleteUser = id => async dispatch => {
+  try {
+    const config = {
+      withCredentials: true,
+    };
+    dispatch({ type: 'deleteUsersRequest' });
+
+    const { data } = await axios.delete(`${server}/admin/user/${id}`, config);
+
+    dispatch({ type: 'deleteUsersSuccess', payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: 'deleteUsersFail',
+      payload: error.response.data.message,
+    });
+  }
+};

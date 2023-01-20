@@ -4,8 +4,10 @@ import { RiDeleteBin7Fill } from 'react-icons/ri';
 import cursor from '../../../assets/images/cursor.png';
 import Sidebar from '../Sidebar';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllUsers } from '../../../redux/actions/admin';
-import Loader from '../../Layout/Loader/Loader';
+import { deleteUser, getAllUsers, updateUserRole } from '../../../redux/actions/admin';
+
+import { toast } from 'react-hot-toast';
+import { getAllAnimes } from '../../../redux/actions/anime';
 const Users = () => {
 
   // const users =[{
@@ -18,21 +20,33 @@ const Users = () => {
   //   email:"antivirus076@gmail"
 
   // }]
-  const { user,loading } = useSelector(state => state.admin);
+  const {error,message, user,loading } = useSelector(state => state.admin);
+
 
   const dispatch = useDispatch();
 
   const updateHandler = userId => {
-    console.log(userId);
+    dispatch(updateUserRole(userId));
   };
 
   const deleteButtonHandler = userId => {
-      console.log(userId);
+      dispatch(deleteUser(userId));
     };
 
     useEffect(() => {
-      dispatch(getAllUsers());
-    }, [dispatch]);
+          if (error) {
+            toast.error(error);
+            dispatch({ type: 'clearError' });
+          }
+
+          if (message) {
+            toast.success(message);
+            dispatch({ type: 'clearMessage' });
+          }
+
+          dispatch(getAllAnimes());
+          dispatch(getAllUsers());
+    }, [dispatch, error, message]);
 
 
   return (
@@ -43,9 +57,7 @@ const Users = () => {
         cursor: `url(${cursor}),default`,
       }}
     >
-      {loading ? (
-        <Loader color='purple.500'/>
-      ) : (
+
         <Box p={['0', '16']} overflowX="auto">
           <Heading
             textTransform={'uppercase'}
@@ -74,13 +86,14 @@ const Users = () => {
                     deleteButtonHandler={deleteButtonHandler}
                     key={item._id}
                     item={item}
+                    loading={loading}
                   />
                 ))}
               </Tbody>
             </Table>
           </TableContainer>
         </Box>
-      )}
+
 
       <Sidebar />
     </Grid>
@@ -90,7 +103,7 @@ const Users = () => {
 export default Users;
 
 
-function Row({item,updateHandler,deleteButtonHandler}){
+function Row({item,updateHandler,deleteButtonHandler,loading}){
   return (
     <Tr>
       <Td>#{item._id}</Td>
@@ -104,10 +117,12 @@ function Row({item,updateHandler,deleteButtonHandler}){
             variant={'outline'}
             color="purple.500"
             onClick={() => updateHandler(item._id)}
+            isLoading={loading}
           >
             Change Role
           </Button>
-          <Button color="purple.600" onClick={() => deleteButtonHandler(item._id)}>
+          <Button color="purple.600" onClick={() => deleteButtonHandler(item._id)}
+          isLoading={loading}>
             <RiDeleteBin7Fill />
           </Button>
         </HStack>
