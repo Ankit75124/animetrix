@@ -18,7 +18,6 @@ import { getAllAnimes } from '../../redux/actions/anime';
 import { addToPlaylist } from '../../redux/actions/profile';
 import { loadUser } from '../../redux/actions/user';
 
-
 const Anime = ({
   views,
   title,
@@ -93,21 +92,22 @@ const Animes = () => {
 
   const navigate = useNavigate();
 
-  const addToPlaylistHandler =async animeId => {
+  const addToPlaylistHandler = async animeId => {
     // console.log('Added to playlist', animeId);
 
-   await dispatch(addToPlaylist(animeId));
-   dispatch(loadUser());
+    await dispatch(addToPlaylist(animeId));
+    dispatch(loadUser());
     navigate('/profile');
   };
 
   const categories = [
+    'Shounen',
     'Action',
+    'Adventure',
     'Romantic',
-    'Comedy',
-    'Blood-Shed',
+    'Sports',
     'Horror',
-    'Shonen',
+    'Comedy',
   ];
 
   const { loading, animes, error, message } = useSelector(state => state.anime);
@@ -158,7 +158,7 @@ const Animes = () => {
         alignItems={['center', 'flex-start']}
       >
         {animes.length > 0 ? (
-          animes.map((item) => {
+          animes.map(item => {
             console.log(
               item._id,
               item.title,
@@ -166,7 +166,7 @@ const Animes = () => {
               item.views,
               item.poster.url,
               item.createdBy,
-              item.noOfVideos,
+              item.noOfVideos
             );
             return (
               <Anime
@@ -182,9 +182,9 @@ const Animes = () => {
                 loading={loading}
               />
             );
-        })
+          })
         ) : (
-          <Heading mt="4" children="Courses Not Found" />
+          <Heading mt="4" children="Anime Not Found" />
         )}
       </Stack>
     </Container>

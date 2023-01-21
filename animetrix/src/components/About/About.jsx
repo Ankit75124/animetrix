@@ -12,7 +12,7 @@ import {
 import React from 'react';
 import { RiSecurePaymentFill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
-import introVideo from '../../assets/videos/intro.mp4';
+import introVideo from '../../assets/videos/Subscribe.mp4';
 import termsAndCondition from '../../assets/docs/termsAndCondition.js';
 
 const Founder = () => (

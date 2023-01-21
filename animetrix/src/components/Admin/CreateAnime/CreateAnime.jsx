@@ -26,12 +26,13 @@ const CreateAnime = () => {
   const [imagePrev, setImagePrev] = useState('');
 
   const categories = [
+    'Shounen',
     'Action',
+    'Adventure',
     'Romantic',
-    'Comedy',
-    'Blood-Shed',
+    'Sports',
     'Horror',
-    'Shoenun',
+    'Comedy',
   ];
 
   const changeImageHandler = e => {

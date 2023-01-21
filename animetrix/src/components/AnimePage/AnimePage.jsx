@@ -12,38 +12,6 @@ const AnimePage = ({user}) => {
 
     const { episodes, loading } = useSelector(state => state.anime);
 
-    // const episodes1 = [
-    //   {
-    //     _id: 'sdsdsdsd',
-    //     title: 'Episode 1',
-    //     description: 'loremsndksndks',
-    //     video: {
-    //       url: 'https://www.youtube.com/watch?v=1Q8fG0TtVAY',
-    //     },
-    //   },
-    //   {
-    //     _id: 'sdsdsdsd2',
-    //     title: 'Episode 2',
-    //     description: 'loremsndksndks',
-    //     video: {
-    //       url: { introVideo },
-    //     },
-    //   },
-    //   {
-    //     _id: 'sdsdsdsd3',
-    //     title: 'Episode 3',
-    //     description: 'loremsndksndks',
-    //     video: {
-    //       url: { introVideo },
-    //     },
-    //   },
-    // ];
-
-      // console.log(episodes[episodeNumber].title);
-      // console.log(episodes1);
-      console.log(episodes);
-
-
         const dispatch = useDispatch();
         const params = useParams();
 

@@ -15,18 +15,20 @@ const Footer = () => {
             color={'Green'}
           />
         </VStack>
-        <HStack spacing={['2', '10']} 
-        justifyContent="center"
-        color={'white'}
-        fontSize={'50'}
+        <HStack
+          spacing={['2', '10']}
+          justifyContent="center"
+          color={'white'}
+          fontSize={'50'}
         >
-          <a href="https://www.linkedin.com/in/rajankit24/" target={'_blank'}>
+
+          <a href="https://www.linkedin.com/in/rajankit24/" target={'_blank'} rel="noreferrer">
             <TiSocialLinkedinCircular />
           </a>
-          <a href="https://github.com/Ankit75124" target={'_blank'}>
+          <a href="https://github.com/Ankit75124" target={'_blank'} rel="noreferrer">
             <TiSocialGithubCircular />
           </a>
-          <a href="https://www.linkedin.com/in/rajankit24/" target={'_blank'}>
+          <a href="https://www.instagram.com/katomekichi__/" target={'_blank'} rel="noreferrer">
             <TiSocialInstagramCircular />
           </a>
         </HStack>

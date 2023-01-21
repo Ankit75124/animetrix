@@ -77,9 +77,36 @@ export const DoughnutChart = ({ users=[] }) => {
 };
 
 function getLastYearMonths() {
-  const labels = [];
-
-  const months = [
+  //   const labels = [];
+  //   const months = [
+  //     'January',
+  //     'February',
+  //     'March',
+  //     'April',
+  //     'May',
+  //     'June',
+  //     'July',
+  //     'August',
+  //     'September',
+  //     'October',
+  //     'November',
+  //     'December',
+  //   ];
+  //   const currentMonth = new Date().getMonth();
+  // // const currentMonth=5;
+  //   const remain = 10 - currentMonth;
+  //   for (let i = currentMonth; i < months.length; i--) {
+  //     const element = months[i];
+  //     labels.unshift(element);
+  //     if (i === 0) break;
+  //   }
+  //   for (let i = 11; i > remain; i--) {
+  //     if (i === currentMonth) break;
+  //     const element = months[i];
+  //     labels.unshift(element);
+  //   }
+  //   return labels;
+  const monthNames = [
     'January',
     'February',
     'March',
@@ -94,24 +121,14 @@ function getLastYearMonths() {
     'December',
   ];
 
-  const currentMonth = new Date().getMonth();
-// const currentMonth=5;
-  const remain = 10 - currentMonth;
+  const currentDate = new Date();
+  const currentMonthIndex = currentDate.getMonth();
+  const monthsArray = [
+    ...monthNames.slice(currentMonthIndex),
+    ...monthNames.slice(0, currentMonthIndex),
+  ];
 
-  for (let i = currentMonth; i < months.length; i--) {
-    const element = months[i];
-    labels.unshift(element);
-    if (i === 0) break;
-  }
-
-  for (let i = 11; i > remain; i--) {
-    if (i === currentMonth) break;
-    const element = months[i];
-    labels.unshift(element);
-  }
-
-  return labels;
-
+  return monthsArray;
 }
 
 
